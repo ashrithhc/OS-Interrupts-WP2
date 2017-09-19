@@ -23,7 +23,7 @@ void start(uint32_t *modulep, void *physbase, void *physfree)
   }
   kprintf("physfree %p\n", (uint64_t)physfree);
   kprintf("tarfs in [%p:%p]\n", &_binary_tarfs_start, &_binary_tarfs_end);
-  kprintf("hello %c char, %d int\n", 'a', 12);
+  kprintf("hello this is a big line  %c char, %d int %s and %x plus %p\n world\n", 'a', 12, "yoman", 12321, 12321);
   while(1) ;
 }
 
