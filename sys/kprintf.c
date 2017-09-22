@@ -6,6 +6,15 @@ static int usedSpace=0;
 void kprintf(const char *fmt, ...)
 {
 	const char *temp1; register char *temp2;
+/*
+	temp2 = (char *)0xb8000;	
+
+	for(int i=0; i<81; i++){
+		*temp2 = 'a';
+		temp2 += 2;
+	}
+
+	return;*/
 
 	va_list valist;
 	va_start(valist, fmt);
@@ -132,4 +141,6 @@ void kprintf(const char *fmt, ...)
 	}
 
 	va_end(valist);
+
+	usedSpace += (80 - usedSpace%80);
 }
