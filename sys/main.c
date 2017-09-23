@@ -3,7 +3,7 @@
 #include <sys/kprintf.h>
 #include <sys/tarfs.h>
 #include <sys/ahci.h>
-
+#include <../sys/idt.h>
 #define INITIAL_STACK_SIZE 4096
 uint8_t initial_stack[INITIAL_STACK_SIZE]__attribute__((aligned(16)));
 uint32_t* loader_stack;
@@ -24,13 +24,15 @@ void start(uint32_t *modulep, void *physbase, void *physfree)
   kprintf("physfree %p\n", (uint64_t)physfree);
   kprintf("tarfs in [%p:%p]\n", &_binary_tarfs_start, &_binary_tarfs_end);
   kprintf("hello this is a big line  %c char, %d int %s and %x plus %p\n world\n", 'a', 12, "yoman", 12321, 12321);
-  while(1) ;
+   init_descriptor_tables();
+__asm__ __volatile__ ("sti");
+//  while(1) ;
 }
 
 void boot(void)
 {
   // note: function changes rsp, local stack variables can't be practically used
-  register char *temp1, *temp2;
+  register char /**temp1,*/ *temp2;
 
   for(temp2 = (char*)0xb8001; temp2 < (char*)0xb8000+160*25; temp2 += 2) *temp2 = 7 /* white */;
   __asm__ volatile (
@@ -46,10 +48,10 @@ void boot(void)
     (uint64_t*)&physbase,
     (uint64_t*)(uint64_t)loader_stack[4]
   );
-  for(
+ /* for(
     temp1 = "!!!!! start() returned !!!!!", temp2 = (char*)0xb8000;
     *temp1;
     temp1 += 1, temp2 += 2
-  ) *temp2 = *temp1;
+  ) *temp2 = *temp1;*/
   while(1) __asm__ volatile ("hlt");
 }
