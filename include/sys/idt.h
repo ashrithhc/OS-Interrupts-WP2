@@ -1,5 +1,3 @@
-#include "common.h"
-
 void init_descriptor_tables();
 
 // A struct describing an interrupt gate.

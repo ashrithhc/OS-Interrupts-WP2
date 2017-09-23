@@ -1,6 +1,6 @@
 #include <sys/defs.h>
 #include <sys/kprintf.h>
-#include "idt.h"
+#include <sys/idt.h>
 
 static void init_idt();
 static void idt_set_gate(uint8_t, uint64_t, uint16_t, uint8_t);
@@ -14,7 +14,8 @@ void isr0(){
 
 void isr32(){
     kprintf("-----one\n");
-    outb(0x20,0x20);
+    // outb(0x20,0x20);
+    __asm__ __volatile__ ("outb %0, %1" : : "a"(0x20), "Nd"(0x20));
     __asm__("iretq");
 }
 
