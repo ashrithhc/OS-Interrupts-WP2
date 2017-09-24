@@ -10,12 +10,12 @@ uint16_t pciConfigReadWord(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offs
 
 	address = (uint32_t)( (lbus << 16) | (lslot << 11) | (lfunc << 8) | (offset & 0xfc) | ((uint32_t)0x80000000) );
 
-	__asm__ __volatile__ ("outl %0, %w1" : : "a"(address), "Nd"(0xCF80000));
+	__asm__ __volatile__ ("outl %0, %1" : : "a"(address), "Nd"((uint16_t)0xCF8));
 
 	uint32_t ret;
-	__asm__ __volatile__ ("inl %w1, %0" : "=a" (ret) : "Nd" (0xCFC0000));
+	__asm__ __volatile__ ("inl %1, %0" : "=a" (ret) : "Nd" ((uint16_t)0x0CFC));
 
-	temp_addr = (int16_t)(ret >> ((offset & 2) * 8) & 0xffff);
+	temp_addr = (uint16_t)(ret >> ((offset & 2) * 8) & 0xffff);
 
 	return temp_addr;
 }
@@ -24,17 +24,32 @@ uint16_t getVendor(uint8_t bus, uint8_t slot){
 	return pciConfigReadWord(bus, slot, 0, 0);
 }
 
+void getFirstDevice(uint8_t bus, uint8_t slot){
+	uint32_t hba_mem;
+
+	hba_mem = ((uint32_t)((pciConfigReadWord(bus, slot, 0, 0x26) & 0xFFFF) << 16)) | ((uint32_t)(pciConfigReadWord(bus, slot, 0, 0x24) & 0xFFFF));
+
+	kprintf("%d\n", *hba_mem);
+}
+
 void checkalldevices(){
-	uint8_t classcode;
-		classcode = (uint8_t)(pciConfigReadWord(2, 3, 0, 10) >> 8);
-		kprintf("%d\n", classcode);
-	
-	for (int bus = 0; bus < 256; bus++){
-		for(int slot = 0; slot < 32; slot++){
+	uint16_t classcode, subclass, progif;
+	int bus, slot;	
+	for (bus = 0; bus < 255; bus++){
+		for(slot = 0; slot < 32; slot++){
 			if (getVendor(bus, slot) != 0xFFFF){
-				classcode = (uint8_t)(pciConfigReadWord(bus, slot, 0, 10) >> 8);
-				kprintf("%d\n", classcode);
+				classcode = ((pciConfigReadWord(bus, slot, 0, 10)&0xFF00) >> 8);
+				if(classcode == 0x01){
+					subclass = (pciConfigReadWord(bus, slot, 0, 10)&0x00FF);
+					if(subclass == 0x06){
+						progif = ((pciConfigReadWord(bus, slot, 0, 8)&0xFF00)>>8);
+						if(progif == 0x01){
+							getFirstDevice(bus, slot);
+						}
+					}
+				} 
 			}
 		}
 	}
 }
+
