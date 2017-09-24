@@ -15,7 +15,7 @@ void isr0(){
 void isr32(){
     kprintf("-----one\n");
     // outb(0x20,0x20);
-    __asm__ __volatile__ ("outb %0, %1" : : "a"(0x20), "Nd"(0x20));
+    // __asm__ __volatile__ ("outb %0, %1" : : "a"(0x20), "Nd"(0x20));
     __asm__("iretq");
 }
 
