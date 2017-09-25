@@ -45,16 +45,14 @@ void bringDownMemory(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset){
 
 int check_type(hba_port_t *port)
 {
-/*	uint32_t ssts = port->ssts;
+	uint32_t ssts = port->ssts;
  
 	uint8_t ipm = (ssts >> 8) & 0x0F;
 	uint8_t det = ssts & 0x0F;
+
+	if (det != 3) return AHCI_DEV_NULL;
+	if (ipm != 1) return AHCI_DEV_NULL;
  
-	if (det != 1)	// Check drive status
-		return AHCI_DEV_NULL;
-	if (ipm != 3)
-		return AHCI_DEV_NULL;
- */
 	switch (port->sig)
 	{
 	case SATA_SIG_ATAPI:
@@ -81,22 +79,22 @@ void probePort(hba_mem_t *abar){
 			}
 			else if (dt == AHCI_DEV_SATAPI)
 			{
-				kprintf("SATAPI drive found at port %d\n", i);
+				kprintf("SATAPI drive found at port\n");
 				return;
 			}
 			else if (dt == AHCI_DEV_SEMB)
 			{
-				kprintf("SEMB drive found at port %d\n", i);
+				kprintf("SEMB drive found at port\n");
 				return;
 			}
 			else if (dt == AHCI_DEV_PM)
 			{
-				kprintf("PM drive found at port %d\n", i);
+				kprintf("PM drive found at port\n");
 				return;
 			}
 			else
 			{
-				kprintf("No drive found at port %d\n", i);
+				kprintf("No drive found at port\n");
 			} 
 		}
 		pi >>= 1;
