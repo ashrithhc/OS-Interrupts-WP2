@@ -5,6 +5,7 @@
 #include <sys/ahci.h>
 #include <sys/idt.h>
 #include <sys/pci.h>
+#include <sys/writeblock.h>
 #define INITIAL_STACK_SIZE 4096
 uint8_t initial_stack[INITIAL_STACK_SIZE]__attribute__((aligned(16)));
 uint32_t* loader_stack;
@@ -30,6 +31,7 @@ void start(uint32_t *modulep, void *physbase, void *physfree)
 //  while(1) ;
 
 checkalldevices();
+//writeToDisk();
 }
 
 void boot(void)

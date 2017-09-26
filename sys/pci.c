@@ -1,5 +1,6 @@
 #include <sys/defs.h>
 #include <sys/ahci.h>
+#include <sys/writeblock.h>
 #include <sys/kprintf.h>
 
 #define	SATA_SIG_ATA	0x00000101	// SATA drive
@@ -74,23 +75,23 @@ void probePort(hba_mem_t *abar){
 			int dt = check_type(&abar->ports[i]);
 			if (dt == AHCI_DEV_SATA)
 			{
-				kprintf("SATA drive found\n");
-				return;
+				// kprintf("SATA drive found\n");
+				if (i!=0){
+					writeToDisk(&(abar->ports[i]));
+					return;
+				}
 			}
 			else if (dt == AHCI_DEV_SATAPI)
 			{
 				kprintf("SATAPI drive found at port\n");
-				return;
 			}
 			else if (dt == AHCI_DEV_SEMB)
 			{
 				kprintf("SEMB drive found at port\n");
-				return;
 			}
 			else if (dt == AHCI_DEV_PM)
 			{
 				kprintf("PM drive found at port\n");
-				return;
 			}
 			else
 			{
